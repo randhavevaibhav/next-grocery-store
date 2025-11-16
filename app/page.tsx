@@ -1,6 +1,10 @@
-import { Button } from "@/components/ui/button";
+import { rootURL } from "@/lib/config";
 
-export default function Home() {
+export default async function Home() {
+  const res = await fetch(`${rootURL}/api/hello`);
+  const data = await res.json();
+  console.log(`Res data ==> `, data);
+
   return (
     <div>
       Home
