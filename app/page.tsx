@@ -2,7 +2,6 @@ import { getRootAPIURL } from "@/lib/config";
 
 export default async function Home() {
   const rootURL = await getRootAPIURL();
-  console.log("rootURL ==> ", rootURL);
   const res = await fetch(`${rootURL}/api/hello`);
   const data = await res.json();
   // console.log(`Res data ==> `, data);
