@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/supabse-client";
 import Link from "next/link";
+import { Redirect } from "@/components/ui/redirect";
 
 export const LoginForm = () => {
   const supabaseClient = createClient();
@@ -11,6 +12,7 @@ export const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const [message, setMessage] = useState("");
 
   async function handleLogin(e: React.FormEvent) {
@@ -23,15 +25,19 @@ export const LoginForm = () => {
       password,
     });
 
-    setLoading(false);
-
     if (error) {
       setMessage(error.message);
+      setLoading(false);
+      setIsRedirecting(false);
       return;
     }
-
+    setIsRedirecting(true);
     // Redirect user after login
     router.push("/");
+  }
+
+  if (isRedirecting) {
+    return <Redirect />;
   }
 
   return (

@@ -7,7 +7,7 @@ type AuthContextProviderProps = {
   children: React.ReactNode;
 };
 
-type AuthUser = {
+export type AuthUser = {
   id: string;
   email: string | undefined;
 };
@@ -48,8 +48,10 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   }, []);
 
   const logout = async () => {
-    await supabaseClient.auth.signOut();
+    setLoading(true);
     setUser(null);
+    await supabaseClient.auth.signOut();
+    setLoading(false);
   };
 
   return (
