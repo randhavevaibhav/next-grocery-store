@@ -59,6 +59,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
 
     setLoading(false);
     router.push("/login");
+    router.refresh();
   };
 
   const login = async ({
