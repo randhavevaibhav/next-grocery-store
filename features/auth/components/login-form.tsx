@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "../context/auth-context";
+import { Redirect } from "@/components/ui/redirect";
 
 export const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -15,6 +16,10 @@ export const LoginForm = () => {
       email,
       password,
     });
+  }
+
+  if (loading) {
+    return <Redirect />;
   }
 
   return (
