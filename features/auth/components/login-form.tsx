@@ -1,43 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/supabse-client";
 import Link from "next/link";
-import { Redirect } from "@/components/ui/redirect";
+import { useAuth } from "../context/auth-context";
 
 export const LoginForm = () => {
-  const supabaseClient = createClient();
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [isRedirecting, setIsRedirecting] = useState(false);
-  const [message, setMessage] = useState("");
+  const { login, loading, error } = useAuth();
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
-    setLoading(true);
-    setMessage("");
-
-    const { data, error } = await supabaseClient.auth.signInWithPassword({
+    login({
       email,
       password,
     });
-
-    if (error) {
-      setMessage(error.message);
-      setLoading(false);
-      setIsRedirecting(false);
-      return;
-    }
-    setIsRedirecting(true);
-    // Redirect user after login
-    router.push("/");
-  }
-
-  if (isRedirecting) {
-    return <Redirect />;
   }
 
   return (
@@ -68,8 +45,8 @@ export const LoginForm = () => {
         </button>
       </form>
 
-      {message && (
-        <p className="mt-4 text-center text-sm text-red-600">{message}</p>
+      {error && (
+        <p className="mt-4 text-center text-sm text-red-600">{error}</p>
       )}
 
       <p className="mt-4 text-center text-sm">

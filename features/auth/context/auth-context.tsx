@@ -1,6 +1,7 @@
 "use client";
 
 import { createClient } from "@/lib/supabase/supabse-client";
+import { useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
 
 type AuthContextProviderProps = {
@@ -16,6 +17,8 @@ type AuthContextType = {
   user: AuthUser | null;
   logout: () => Promise<void>;
   loading: boolean;
+  login: ({ email, password }: { email: string; password: string }) => {};
+  error: string;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -23,7 +26,9 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const supabaseClient = createClient();
+  const router = useRouter();
 
   useEffect(() => {
     const getUser = async () => {
@@ -51,11 +56,38 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     setLoading(true);
     setUser(null);
     await supabaseClient.auth.signOut();
+
     setLoading(false);
+    router.push("/login");
+  };
+
+  const login = async ({
+    email,
+    password,
+  }: {
+    email: string;
+    password: string;
+  }) => {
+    setLoading(true);
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      setError(error.message);
+      setLoading(false);
+
+      return;
+    }
+
+    // Redirect user after login
+    setLoading(false);
+    router.push("/");
   };
 
   return (
-    <AuthContext.Provider value={{ user, logout, loading }}>
+    <AuthContext.Provider value={{ user, logout, loading, login, error }}>
       {children}
     </AuthContext.Provider>
   );

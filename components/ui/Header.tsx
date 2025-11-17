@@ -13,9 +13,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/features/auth/context/auth-context";
 
+import { useAuth } from "@/features/auth/context/auth-context";
 
 export const Header = () => {
   const { user } = useAuth();
@@ -29,12 +28,9 @@ export const Header = () => {
 
 const AuthHeader = () => {
   const { logout } = useAuth();
-  const router = useRouter();
 
-  const handleLogout = async() => {
-   
+  const handleLogout = async () => {
     await logout();
-   router.push(`/login`);
   };
 
   return (
