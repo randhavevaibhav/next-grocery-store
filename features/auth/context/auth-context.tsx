@@ -85,6 +85,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     // Redirect user after login
     setLoading(false);
     router.push("/");
+    router.refresh();
   };
 
   return (
