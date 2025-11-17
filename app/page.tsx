@@ -1,5 +1,5 @@
 // import { getRootAPIURL } from "@/lib/config";
-
+export const dynamic = "force-dynamic";
 import RootClientPage from "./client-page";
 
 export default async function Home() {
@@ -11,8 +11,7 @@ export default async function Home() {
 
   return (
     <div>
-     <RootClientPage/>
-     
+      <RootClientPage />
     </div>
   );
 }
