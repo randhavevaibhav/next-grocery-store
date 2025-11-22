@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Outfit } from "next/font/google";
 import "./globals.css";
 import { Header } from "../components/ui/header";
 import { AuthContextProvider } from "@/features/auth/context/auth-context";
+import { ProgressBar, ProgressBarProvider } from "react-transition-progress";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,12 +33,22 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${outfit.className} ${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${outfit.className} ${geistSans.variable} ${geistMono.variable} antialiased `}
       >
-        <AuthContextProvider>
-          <Header />
-          {children}
-        </AuthContextProvider>
+       
+          <ProgressBarProvider>
+          {/* I.e. using Tailwind CSS to show the progress bar with custom styling */}
+          <ProgressBar className="fixed h-1 shadow-lg shadow-sky-500/20 bg-sky-500 top-0" />
+          <AuthContextProvider>
+            <Header />
+             <main className="max-w-5xl mx-auto">
+
+                {children}
+             </main>
+          
+          </AuthContextProvider>
+        </ProgressBarProvider>
+      
       </body>
     </html>
   );

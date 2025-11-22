@@ -17,8 +17,10 @@ type AuthContextType = {
   user: AuthUser | null;
   logout: () => Promise<void>;
   loading: boolean;
-  login: ({ email, password }: { email: string; password: string }) => {};
-  error: string;
+  login: ({ email, password }: { email: string; password: string }) => void;
+  error: string | null;
+  message: string | null;
+  signup:({email,password}:{email:string,password:string})=>void
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -26,7 +28,8 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
   const supabaseClient = createClient();
   const router = useRouter();
 
@@ -52,14 +55,29 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     return () => listener.subscription.unsubscribe();
   }, []);
 
-  const logout = async () => {
+  const signup = async ({
+    email,
+    password,
+  }: {
+    email: string;
+    password: string;
+  }) => {
+    setMessage(null)
     setLoading(true);
-    setUser(null);
-    await supabaseClient.auth.signOut();
+    const { data, error } = await supabaseClient.auth.signUp({
+      email,
+      password,
+    });
+
+    if (error) {
+      setError(error.message);
+      setLoading(false);
+      setMessage(null);
+      return;
+    }
 
     setLoading(false);
-    router.push("/login");
-    router.refresh();
+    setMessage("Check your email to confirm your signup.");
   };
 
   const login = async ({
@@ -82,13 +100,24 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
       return;
     }
 
-    // Redirect user after login
+    // Redirect user to test after login -- replace /test with actual page
+    router.push("/test");
+    setError(null);
+      setLoading(false);
+  };
+
+  const logout = async () => {
+    setLoading(true);
+    setUser(null);
+    await supabaseClient.auth.signOut();
+
+    //after log out re-direct to home page
     router.push("/");
-    router.refresh();
+    setLoading(false);
   };
 
   return (
-    <AuthContext.Provider value={{ user, logout, loading, login, error }}>
+    <AuthContext.Provider value={{ user, logout, loading, login, error,message ,signup}}>
       {children}
     </AuthContext.Provider>
   );

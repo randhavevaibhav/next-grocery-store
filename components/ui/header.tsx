@@ -1,7 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { LayoutGrid, Search, ShoppingBag } from "lucide-react";
+import { LayoutGrid, MapPin, Search, ShoppingBag } from "lucide-react";
 import Image from "next/image";
 
 import {
@@ -12,59 +11,78 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import Link from "next/link";
 
+import { Link } from "react-transition-progress/next";
 import { useAuth } from "@/features/auth/context/auth-context";
+import { useProgress } from "react-transition-progress";
+import { startTransition } from "react";
+
 
 export const Header = () => {
-  const { user } = useAuth();
+  const { user: isUserAuthenticated } = useAuth();
 
-  if (!user) {
-    return <UnAuthHeader />;
-  } else {
-    return <AuthHeader />;
-  }
+  return (
+    <header className="flex justify-between items-center p-4 shadow-md mb-1">
+      <SiteLogo />
+
+      <nav className="flex items-center space-x-4">
+        {isUserAuthenticated ? (
+          // --- Authenticated View ---
+          <AuthView />
+        ) : (
+          // --- Un-Authenticated View ---
+          <UnAuthView />
+        )}
+      </nav>
+    </header>
+  );
 };
 
-const AuthHeader = () => {
-  const { logout } = useAuth();
+const AuthView = () => {
+  const { loading, logout } = useAuth();
+  const startProgress = useProgress();
 
   const handleLogout = async () => {
+    startProgress();
     await logout();
   };
 
   return (
-    <div className="flex p-5 shadow-md justify-between">
-      <div className="flex items-center gap-8">
-        <SiteLogo />
+    <>
+      <SearchProduct />
 
-        <SelectCategories />
-        <SearchProduct />
-      </div>
-      <div className="flex gap-5 items-center">
-        <h2 className="flex gap-2 items-center text-lg">
-          <ShoppingBag />0
-        </h2>
-        <Button className="cursor-pointer" onClick={handleLogout}>
-          Logout
-        </Button>
-      </div>
-    </div>
+      <SelectCategories />
+      <Link href="/test" className="hover:underline">
+        Test
+      </Link>
+     
+
+      <span>Welcome</span>
+      <button
+        type="button"
+        onClick={() => {
+          startTransition(handleLogout);
+        }}
+        disabled={loading}
+        className="bg-black text-white py-1.5 px-4 rounded-full cursor-pointer disabled:cursor-not-allowed"
+      >
+        Logout
+      </button>
+       <h2 className="flex gap-2 items-center text-lg">
+        <ShoppingBag />0
+      </h2>
+    </>
   );
 };
 
-const UnAuthHeader = () => {
+const UnAuthView = () => {
+ 
   return (
-    <div className="flex p-5 shadow-md justify-between">
-      <div className="flex items-center gap-8">
-        <SiteLogo />
-      </div>
-      <div className="flex gap-5 items-center">
-        <Link href={`/login`} className="cursor-pointer">
-          Login
-        </Link>
-      </div>
-    </div>
+    <>
+      
+      <p className="inline-flex gap-2 cursor-pointer">Find us <MapPin/> </p>
+     
+    </>
   );
 };
 
@@ -73,8 +91,8 @@ const SiteLogo = () => {
     <Link href={`/`}>
       <Image
         src={`/logo.png`}
-        width={`80`}
-        height={`80`}
+        width={`60`}
+        height={`60`}
         alt="logo"
         loading="eager"
       />
